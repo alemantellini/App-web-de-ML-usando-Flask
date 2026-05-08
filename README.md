@@ -27,13 +27,13 @@ App-web-de-ML-usando-Flask/
 # 1. Instalar dependencias
 pip install -r requirements.txt
 
-# 2. Tener el modelo en models/random_forest_diabetes.pkl
+# 2. Tener el modelo guardado en models/random_forest_diabetes.pkl
 
 # 3. Ejecutar
 python app.py
 ```
 
-Abrir http://localhost:5000
+Abrir Localhost
 
 ---
 
