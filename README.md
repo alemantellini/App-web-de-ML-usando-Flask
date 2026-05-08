@@ -13,9 +13,9 @@ App-web-de-ML-usando-Flask/
 │   └── random_forest_diabetes.pkl # Modelo entrenado
 └── templates/
     └── index.html # Interfaz web
-├── app.py # Aplicación Flask principal
 ├── Procfile # Configuración para Render
 ├── README.md
+├── app.py # Aplicación Flask principal
 ├── requirements.txt # Dependencias Python
 ```
 
