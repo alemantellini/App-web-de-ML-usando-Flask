@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DiabetesScan · Predicción</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0f1e;
+            --surface: #111827;
+            --surface2: #1a2438;
+            --accent: #00e5a0;
+            --accent2: #0099ff;
+            --danger: #ff4d6d;
+            --text: #e8edf5;
+            --muted: #6b7a99;
+            --border: rgba(255, 255, 255, 0.07);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Background grid */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0, 229, 160, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 229, 160, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Glowing orbs */
+        body::after {
+            content: '';
+            position: fixed;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(0, 229, 160, 0.06) 0%, transparent 70%);
+            top: -100px; right: -100px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 56px;
+            animation: fadeDown 0.6s ease both;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 229, 160, 0.1);
+            border: 1px solid rgba(0, 229, 160, 0.25);
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 6px 14px;
+            border-radius: 100px;
+            margin-bottom: 20px;
+        }
+
+        .badge::before {
+            content: '';
+            width: 6px; height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2.2rem, 5vw, 3.8rem);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+
+        h1 span {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            margin-top: 16px;
+            color: var(--muted);
+            font-size: 1rem;
+            font-weight: 300;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        /* Card */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            animation: fadeUp 0.7s ease 0.1s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0.4;
+        }
+
+        .section-label {
+            font-family: 'Syne', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* Form grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--muted);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .field-hint {
+            font-size: 10px;
+            color: rgba(107, 122, 153, 0.6);
+            margin-top: -4px;
+        }
+
+        input {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            padding: 13px 16px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: rgba(0,229,160,0.4);
+            box-shadow: 0 0 0 3px rgba(0,229,160,0.08);
+        }
+
+        input::placeholder { color: rgba(107,122,153,0.5); }
+
+        /* Submit button */
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border: none;
+            border-radius: 14px;
+            color: #0a0f1e;
+            cursor: pointer;
+            font-family: 'Syne', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            padding: 16px;
+            transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-submit::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: white;
+            opacity: 0;
+            transition: opacity 0.15s;
+        }
+
+        .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(0,229,160,0.3); }
+        .btn-submit:hover::after { opacity: 0.05; }
+        .btn-submit:active { transform: translateY(0); }
+
+        /* Result */
+        .result {
+            margin-top: 32px;
+            border-radius: 20px;
+            overflow: hidden;
+            animation: fadeUp 0.5s ease both;
+        }
+
+        .result-positive {
+            background: linear-gradient(135deg, rgba(255,77,109,0.12), rgba(255,77,109,0.05));
+            border: 1px solid rgba(255,77,109,0.25);
+        }
+
+        .result-negative {
+            background: linear-gradient(135deg, rgba(0,229,160,0.12), rgba(0,229,160,0.05));
+            border: 1px solid rgba(0,229,160,0.25);
+        }
+
+        .result-inner {
+            padding: 32px;
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .result-icon {
+            width: 56px; height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+
+        .result-positive .result-icon { background: rgba(255,77,109,0.15); }
+        .result-negative .result-icon { background: rgba(0,229,160,0.15); }
+
+        .result-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        .result-positive .result-title { color: var(--danger); }
+        .result-negative .result-title { color: var(--accent); }
+
+        .result-desc {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        /* Probability bars */
+        .prob-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .prob-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .prob-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .prob-meta strong { color: var(--text); font-weight: 500; }
+
+        .bar-track {
+            height: 8px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 100px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 100px;
+            transition: width 1s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .bar-positive { background: linear-gradient(90deg, var(--danger), #ff8fa3); }
+        .bar-negative { background: linear-gradient(90deg, var(--accent), #00c8ff); }
+
+        .disclaimer {
+            margin-top: 24px;
+            padding: 14px 16px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            font-size: 11px;
+            color: var(--muted);
+            line-height: 1.6;
+            border-left: 2px solid rgba(255,255,255,0.08);
+        }
+
+        /* Error */
+        .error-box {
+            margin-top: 24px;
+            padding: 16px;
+            background: rgba(255,77,109,0.08);
+            border: 1px solid rgba(255,77,109,0.2);
+            border-radius: 12px;
+            color: var(--danger);
+            font-size: 13px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 48px;
+            color: var(--muted);
+            font-size: 12px;
+            animation: fadeUp 0.8s ease 0.3s both;
+        }
+
+        footer a { color: var(--accent); text-decoration: none; }
+
+        /* Animations */
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        @media (max-width: 600px) {
+            .card { padding: 24px; }
+            .form-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <header>
+        <div class="badge">Random Forest · ML Model</div>
+        <h1>Diabetes<span>Scan</span></h1>
+        <p class="subtitle">Introduce tus datos clínicos y el modelo de Inteligencia Artificial analizará tu riesgo de diabetes.</p>
+    </header>
+
+    <div class="card">
+        <div class="section-label">Datos del paciente</div>
+
+        <form method="POST" action="/predict">
+            <div class="form-grid">
+
+                <div class="field">
+                    <label>Embarazos</label>
+                    <p class="field-hint">Número de embarazos</p>
+                    <input type="number" name="pregnancies" placeholder="0" min="0" max="20" step="1"
+                           value="{{ request.form.pregnancies if request.form else '' }}" required>
+                </div>
+
+                <div class="field">
+                    <label>Glucosa (mg/dL)</label>
+                    <p class="field-hint">Concentración de glucosa en plasma</p>
+                    <input type="number" name="glucose" placeholder="120" min="0" max="300" step="1"
+                           value="{{ request.form.glucose if request.form else '' }}" required>
+                </div>
+
+                <div class="field">
+                    <label>Presión arterial (mmHg)</label>
+                    <p class="field-hint">Presión diastólica</p>
+                    <input type="number" name="blood_pressure" placeholder="70" min="0" max="200" step="1"
+                           value="{{ request.form.blood_pressure if request.form else '' }}" required>
+                </div>
+
+                <div class="field">
+                    <label>Grosor piel (mm)</label>
+                    <p class="field-hint">Grosor del pliegue tricipital</p>
+                    <input type="number" name="skin_thickness" placeholder="20" min="0" max="100" step="1"
+                           value="{{ request.form.skin_thickness if request.form else '' }}" required>
+                </div>
+
+                <div class="field">
+                    <label>Insulina (µU/ml)</label>
+                    <p class="field-hint">Insulina sérica a las 2 horas</p>
+                    <input type="number" name="insulin" placeholder="80" min="0" max="900" step="1"
+                           value="{{ request.form.insulin if request.form else '' }}" required>
+                </div>
+
+                <div class="field">
+                    <label>IMC (kg/m²)</label>
+                    <p class="field-hint">Índice de masa corporal</p>
+                    <input type="number" name="bmi" placeholder="28.5" min="0" max="80" step="0.1"
+                           value="{{ request.form.bmi if request.form else '' }}" required>
+                </div>
+
+                <div class="field">
+                    <label>Pedigrí diabetes</label>
+                    <p class="field-hint">Función de historial familiar</p>
+                    <input type="number" name="diabetes_pedigree" placeholder="0.5" min="0" max="3" step="0.001"
+                           value="{{ request.form.diabetes_pedigree if request.form else '' }}" required>
+                </div>
+
+                <div class="field">
+                    <label>Edad (años)</label>
+                    <p class="field-hint">Edad del paciente</p>
+                    <input type="number" name="age" placeholder="33" min="1" max="120" step="1"
+                           value="{{ request.form.age if request.form else '' }}" required>
+                </div>
+
+            </div>
+
+            <button type="submit" class="btn-submit">⚡ Analizar con IA</button>
+        </form>
+
+        {% if error %}
+        <div class="error-box">
+            ⚠️ Error al procesar: {{ error }}
+        </div>
+        {% endif %}
+
+        {% if result %}
+        <div class="result result-{{ 'positive' if result.prediction == 1 else 'negative' }}">
+            <div class="result-inner">
+                <div class="result-header">
+                    <div class="result-icon">
+                        {{ '🔴' if result.prediction == 1 else '🟢' }}
+                    </div>
+                    <div>
+                        <div class="result-title">{{ result.label }}</div>
+                        <div class="result-desc">Resultado del análisis del modelo Random Forest</div>
+                    </div>
+                </div>
+
+                <div class="prob-bars">
+                    <div class="prob-row">
+                        <div class="prob-meta">
+                            <strong>Riesgo positivo</strong>
+                            <span>{{ result.probability_positive }}%</span>
+                        </div>
+                        <div class="bar-track">
+                            <div class="bar-fill bar-positive" style="width: {{ result.probability_positive }}%"></div>
+                        </div>
+                    </div>
+                    <div class="prob-row">
+                        <div class="prob-meta">
+                            <strong>Sin diabetes</strong>
+                            <span>{{ result.probability_negative }}%</span>
+                        </div>
+                        <div class="bar-track">
+                            <div class="bar-fill bar-negative" style="width: {{ result.probability_negative }}%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="disclaimer">
+                    ⚠️ Este resultado es orientativo y no reemplaza el diagnóstico de un médico. 
+                    El modelo fue entrenado con el dataset Pima Indians Diabetes y tiene limitaciones.
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <footer>
+        <p>Proyecto de ML · Dataset <a href="https://www.kaggle.com/datasets/uciml/pima-indians-diabetes-database" target="_blank">Pima Indians Diabetes</a> · Random Forest Classifier</p>
+    </footer>
+
+</div>
+</body>
+</html>

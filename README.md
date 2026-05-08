@@ -8,15 +8,15 @@ Se trata de una aplicación web que predice el riesgo de diabetes. Usa un modelo
 ## 📁 Estructura del proyecto
 
 ```
-diabetes-flask/
-├── app.py # Aplicación Flask principal
-├── Procfile # Configuración para Render
-├── requirements.txt # Dependencias Python
-├── save_model.py # Script para exportar el modelo desde el notebook
+App-web-de-ML-usando-Flask/
 ├── models/
 │   └── random_forest_diabetes.pkl # Modelo entrenado
 └── templates/
     └── index.html # Interfaz web
+├── app.py # Aplicación Flask principal
+├── Procfile # Configuración para Render
+├── README.md
+├── requirements.txt # Dependencias Python
 ```
 
 ---
