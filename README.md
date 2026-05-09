@@ -33,7 +33,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Abrir Localhost
+Abrir localhost
 
 ---
 
@@ -47,7 +47,7 @@ Abrir Localhost
 
 ## ☁️ Deploy en Render
 1. Subir este proyecto a GitHub
-2. Ir a [render.com](https://render.com) ->- New --> Web Service
+2. Ir a [render.com](https://render.com) -->- New --> Web Service
 3. Conectar el repositorio
 4. Configurar:
    - **Build command**: `pip install -r requirements.txt`
