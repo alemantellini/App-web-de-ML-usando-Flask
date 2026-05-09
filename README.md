@@ -1,7 +1,7 @@
 # 🩺 DiabetesScan: Predicción de diabetes con Flask + Random Forest
 Se trata de una aplicación web que predice el riesgo de diabetes. Usa un modelo de Machine Learning (Random Forest) entrenado con el conjunto de datos Pima Indians Diabetes Dataset del Instituto Nacional de Diabetes y Enfermedades Digestivas y Renales.
 
-🔗 **Demo en vivo**: [enlace-a-render-aqui]
+🔗 **Demo en vivo**: https://app-web-de-ml-usando-flask.onrender.com/
 
 ---
 
